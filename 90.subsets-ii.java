@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.InputMap;
+
 /*
  * @lc app=leetcode id=90 lang=java
  *
@@ -16,7 +18,8 @@ class Solution {
     public List<List<Integer>> subsetsWithDup(int[] nums) {
         List<List<Integer>> result = new ArrayList<>();
         Arrays.sort(nums);
-        subsetsWithDup(nums, 0, new ArrayList<>(), result, -1);
+        result.add(new ArrayList<>());
+        subsetsWithDup(nums, 0, new ArrayList<>(), result);
         return result;
     }
 
@@ -35,20 +38,43 @@ class Solution {
     // subsetsWithDup(nums, ind + 1, set, result, setInd);
     // }
 
-    // beats: 50%
-    public void subsetsWithDup(int[] nums, int ind, List<Integer> set, List<List<Integer>> result, int setInd) {
-        result.add(new ArrayList<>(set));
+    // beats: 57%
+    // public void subsetsWithDup(int[] nums, int ind, List<Integer> set,
+    // List<List<Integer>> result, int setInd) {
+    // result.add(new ArrayList<>(set));
+    // for (int i = ind; i < nums.length; i++) {
+    // if (i > ind && nums[i] == nums[i - 1])
+    // continue;
+    // set.add(nums[i]); // pick
+    // setInd++;
+    // subsetsWithDup(nums, i + 1, set, result, setInd);
+    // set.remove(setInd); // not-pick
+    // setInd--;
+    // }
+    // }
+
+    // beats: 86.53%
+    public static void subsetsWithDup(int[] nums, int ind, List<Integer> resultPart, List<List<Integer>> result) {
+        if (ind >= nums.length)
+            return;
+
         for (int i = ind; i < nums.length; i++) {
             if (i > ind && nums[i] == nums[i - 1])
                 continue;
-            System.out.println("Add:" + nums[i]);
-            set.add(nums[i]); // pick
-            setInd++;
-            subsetsWithDup(nums, i + 1, set, result, setInd);
-            System.out.println("remove:" + set.get(setInd));
-            set.remove(setInd); // not-pick
-            setInd--;
+            else {
+                resultPart.add(nums[i]);
+                result.add(new ArrayList<>(resultPart));
+                subsetsWithDup(nums, i + 1, resultPart, result);
+                resultPart.remove(resultPart.size() - 1);
+            }
         }
+    }
+
+    public static void main(String[] args) {
+        List<List<Integer>> result = new ArrayList<>();
+        result.add(new ArrayList<>());
+        subsetsWithDup(new int[] { 1, 2, 3 }, 0, new ArrayList<>(), result);
+        System.out.println(result);
     }
 }
 // @lc code=end
